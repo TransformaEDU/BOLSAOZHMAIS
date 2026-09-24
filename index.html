@@ -786,6 +786,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* Fachada da unidade. A proporção é fixa nos três cards para a grade não
    desalinhar quando uma foto ainda não chegou: sem foto, fica um bloco na cor
    da marca com a estrela, em vez de um buraco no meio da linha. */
+/* Botao de inscricao e link da pagina da unidade dividem a mesma linha: quem
+   ainda esta decidindo vai conhecer a unidade, quem ja decidiu se inscreve. */
+.unit__acoes{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem}
+.unit__link{
+  display:inline-flex;align-items:center;min-height:2.75rem;
+  font-size:var(--t-sm);color:var(--ink-soft);text-decoration:underline;
+  text-underline-offset:.22em;text-decoration-thickness:1px;transition:color 220ms var(--out);
+}
+@media (hover:hover) and (pointer:fine){ .unit__link:hover{color:var(--ink)} }
 .unit__photo{
   align-self:stretch;aspect-ratio:16/9;overflow:hidden;
   border-radius:calc(var(--r-shell) - 1.1rem);
@@ -1492,10 +1501,13 @@ button,input,select,textarea{font:inherit;color:inherit}
           <h3>Icaraí</h3>
           <p>Niterói. Estrutura completa da Educação Infantil ao Ensino Médio, num bairro que respira convivência.</p>
           <span class="unit__n">Ensino Médio</span>
-          <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Icaraí">
-            Participar em Icaraí
-            <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
-          </button>
+          <div class="unit__acoes">
+            <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Icaraí">
+              Participar em Icaraí
+              <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
+            </button>
+            <a class="unit__link" href="https://zhmais.com.br/icarai/" target="_blank" rel="noopener">Conhecer a unidade</a>
+          </div>
         </div>
       </article>
       <article class="unit reveal" data-d="1">
@@ -1509,10 +1521,13 @@ button,input,select,textarea{font:inherit;color:inherit}
           <h3>Méier</h3>
           <p>Zona Norte do Rio. Tradição de ensino somada às soluções educacionais mais atuais do país.</p>
           <span class="unit__n">Ensino Médio com preparatório para vestibular e militar</span>
-          <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Méier">
-            Participar no Méier
-            <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
-          </button>
+          <div class="unit__acoes">
+            <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Méier">
+              Participar no Méier
+              <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
+            </button>
+            <a class="unit__link" href="https://zhmais.com.br/meier/" target="_blank" rel="noopener">Conhecer a unidade</a>
+          </div>
         </div>
       </article>
       <article class="unit reveal" data-d="2">
@@ -1526,10 +1541,13 @@ button,input,select,textarea{font:inherit;color:inherit}
           <h3>Vila Isabel</h3>
           <p>Rio de Janeiro. Ambiente acolhedor e estimulante, com escuta constante das famílias.</p>
           <span class="unit__n">Ensino Médio com preparatório para vestibular e militar</span>
-          <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Vila Isabel">
-            Participar em Vila Isabel
-            <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
-          </button>
+          <div class="unit__acoes">
+            <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Vila Isabel">
+              Participar em Vila Isabel
+              <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
+            </button>
+            <a class="unit__link" href="https://zhmais.com.br/vila-isabel/" target="_blank" rel="noopener">Conhecer a unidade</a>
+          </div>
         </div>
       </article>
     </div>
@@ -1674,9 +1692,9 @@ button,input,select,textarea{font:inherit;color:inherit}
       <div>
         <h3 class="foot__h">Unidades</h3>
         <ul>
-          <li><a href="#unidades">Icaraí</a></li>
-          <li><a href="#unidades">Méier</a></li>
-          <li><a href="#unidades">Vila Isabel</a></li>
+          <li><a href="https://zhmais.com.br/icarai/" target="_blank" rel="noopener">Icaraí</a></li>
+          <li><a href="https://zhmais.com.br/meier/" target="_blank" rel="noopener">Méier</a></li>
+          <li><a href="https://zhmais.com.br/vila-isabel/" target="_blank" rel="noopener">Vila Isabel</a></li>
         </ul>
       </div>
       <div>
@@ -1715,7 +1733,7 @@ button,input,select,textarea{font:inherit;color:inherit}
         <span class="sheet__brand">
           <span class="marca-extenso" role="img" aria-label="Colégio ZH+"></span>
         </span>
-        <span class="sheet__count" id="counter">01 / 09</span>
+        <span class="sheet__count" id="counter">01 / 07</span>
         <button class="x" data-close aria-label="Fechar formulário">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
