@@ -36,6 +36,7 @@ const CAMPO = {
   fonte:       3,   // Fonte de cadastro
   segmento:    46,  // Segmento
   campanha:    53,  // Campanha
+  horario:     59,  // Horário do Bolsão (dropdown: "09:00" | "14:00")
   utmSource:   58,  // Utm Source
   lastSource:  82,
   lastMedium:  83,
@@ -81,6 +82,16 @@ const LISTA_ID = 78;                                  // Formulários 2027
 const TAG_NOME = 'LP Bolsão Ensino Médio - ZH+ 2027';
 const FONTE    = 'Formulário - Externo';
 const CAMPANHA = 'Bolsão';                            // opção 1505 do campo 53
+
+/* Horários da prova por unidade, confirmados pela escola em 06/10/2026 para a
+   prova de 07/11: Icaraí só de manhã; Méier e Vila Isabel também às 14h. Os
+   valores são os das opções do campo 59 do ActiveCampaign. Anda junto com
+   HORARIOS_DA_UNIDADE no index.html. */
+const HORARIOS_POR_UNIDADE = {
+  'Icaraí':      ['09:00'],
+  'Méier':       ['09:00', '14:00'],
+  'Vila Isabel': ['09:00', '14:00'],
+};
 
 /* Catálogo de turmas do ZH+ por unidade, o mesmo nas páginas do Infantil e do
    Bolsão. A lista existe para que um cliente adulterado não injete combinação
@@ -193,11 +204,19 @@ function validar(body) {
     responsavel: texto(body.responsavel, 120),
     whatsapp:    texto(body.whatsapp, 30),
     email:       texto(body.email, 160).toLowerCase(),
+    horario:     texto(body.horario, 5),
   };
 
   const turmas = TURMAS_POR_UNIDADE[d.unidade];
   if (!turmas) return { erro: 'Unidade inválida.' };
   if (!turmas.includes(d.turma)) return { erro: 'Essa turma não é oferecida na unidade escolhida.' };
+
+  /* Unidade de um turno só grava o turno dela. Unidade de dois turnos sem
+     horário é a página antiga em cache: o lead entra sem o campo e a
+     secretaria confirma pelo WhatsApp, em vez de ser recusado. */
+  const turnos = HORARIOS_POR_UNIDADE[d.unidade];
+  if (d.horario && !turnos.includes(d.horario)) return { erro: 'Esse horário de prova não existe na unidade escolhida.' };
+  if (!d.horario && turnos.length === 1) d.horario = turnos[0];
   if (d.origem && !ORIGENS.includes(d.origem)) return { erro: 'Origem escolar inválida.' };
   if (d.candidato.length < 5 || !d.candidato.includes(' ')) return { erro: 'Informe o nome completo do candidato.' };
   if (d.responsavel.length < 5 || !d.responsavel.includes(' ')) return { erro: 'Informe o nome completo do responsável.' };
@@ -280,6 +299,7 @@ async function enviarAC({ dados, digitos, utm, atribuicao, base, chave }) {
      apagaria o que já estivesse gravado num contato que voltou a se cadastrar. */
   if (dados.origem) fieldValues.push(campo(CAMPO.origem, dados.origem));
   if (dados.colegio) fieldValues.push(campo(CAMPO.colegio, dados.colegio));
+  if (dados.horario) fieldValues.push(campo(CAMPO.horario, dados.horario));
 
   /* Atribuição de campanha. Um Map por id de campo, porque os dois contratos
      abaixo podem alimentar o mesmo campo e só o último valor deve valer —
@@ -399,6 +419,7 @@ function payloadTechLithy({ dados, digitos }) {
   };
   if (dados.origem) p['form-field-field_c0ade34'] = dados.origem;   // Vem de escola
   if (dados.colegio) p['form-field-field_b203060'] = dados.colegio; // Colégio atual
+  if (dados.horario) p.horario_da_prova = dados.horario;            // fora do mapeamento: vai às Observações
   p.external_id = TL_PREFIXO + randomUUID();
   return p;
 }

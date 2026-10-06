@@ -165,6 +165,38 @@ async function executar(body, env = BASE, opts = {}) {
     console.log('ok  falha na lista devolve 502, nunca sucesso falso');
   }
 
+  /* -------------------------------------------------- Horário da prova --- */
+
+  {
+    /* 07/11/2026: Icaraí só às 9h; Méier e Vila Isabel também às 14h. */
+    const horarioDe = (chamadas) => {
+      const sync = chamadas.find((c) => c.url.includes('/contact/sync'));
+      return Object.fromEntries(sync.corpo.contact.fieldValues.map((f) => [String(f.field), f.value]))['59'];
+    };
+
+    let r = await executar(leadValido, AMBOS);
+    assert.strictEqual(r.res.code, 200);
+    assert.strictEqual(horarioDe(r.chamadas), '09:00', 'Icaraí grava 09:00 sem precisar escolher');
+    const tl = r.chamadas.find((c) => c.url.includes('crm.techlithy.com'));
+    assert.strictEqual(tl.corpo.horario_da_prova, '09:00', 'TechLithy recebe o horário nas Observações');
+
+    r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio', horario: '14:00' });
+    assert.strictEqual(r.res.code, 200);
+    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Méier aceita a tarde');
+
+    r = await executar({ ...leadValido, unidade: 'Vila Isabel', turma: '1ª Série - Ensino Médio', horario: '09:00' });
+    assert.strictEqual(horarioDe(r.chamadas), '09:00', 'Vila Isabel aceita a manhã');
+
+    r = await executar({ ...leadValido, horario: '14:00' });
+    assert.strictEqual(r.res.code, 400, 'Icaraí não tem prova às 14h');
+    assert.strictEqual(r.chamadas.length, 0, 'horário inválido é recusado antes de tocar o CRM');
+
+    r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio' });
+    assert.strictEqual(r.res.code, 200, 'página antiga em cache, sem horário, não perde o lead');
+    assert.strictEqual(horarioDe(r.chamadas), undefined, 'sem escolha, o campo 59 não é inventado');
+    console.log('ok  horário: Icaraí 09:00 fixo; Méier e Vila Isabel 09:00 ou 14:00');
+  }
+
   /* ------------------------------------------------------ TechLithy --- */
 
   {
