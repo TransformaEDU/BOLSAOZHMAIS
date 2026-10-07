@@ -83,14 +83,15 @@ const TAG_NOME = 'LP Bolsão Ensino Médio - ZH+ 2027';
 const FONTE    = 'Formulário - Externo';
 const CAMPANHA = 'Bolsão';                            // opção 1505 do campo 53
 
-/* Horários da prova por unidade, confirmados pela escola em 06/10/2026 para a
-   prova de 07/11: Icaraí só de manhã; Méier e Vila Isabel também às 14h. Os
-   valores são os das opções do campo 59 do ActiveCampaign. Anda junto com
-   HORARIOS_DA_UNIDADE no index.html. */
+/* Horários da prova por unidade. Prova de 24/10/2026: as três unidades são
+   colégio eleitoral (2º turno em 25/10) e aplicam só às 9h. Para voltar a ter
+   tarde numa unidade, acrescente '14:00' aqui E em HORARIOS_DA_UNIDADE no
+   index.html; o passo "Horário da prova" reaparece sozinho. Os valores são os
+   das opções do campo 59 do ActiveCampaign. */
 const HORARIOS_POR_UNIDADE = {
   'Icaraí':      ['09:00'],
-  'Méier':       ['09:00', '14:00'],
-  'Vila Isabel': ['09:00', '14:00'],
+  'Méier':       ['09:00'],
+  'Vila Isabel': ['09:00'],
 };
 
 /* Catálogo de turmas do ZH+ por unidade, o mesmo nas páginas do Infantil e do
@@ -432,7 +433,9 @@ async function enviarTechLithy({ dados, digitos, utm, atribuicao, conta, token, 
   /* As cinco UTMs, que o lead do TechLithy tem como atribuição nativa
      (Origem, Mídia, Campanha, Conteúdo e Termo). Até 06/10/2026 só ia o
      utm_source e o CRM ficava sem campanha. */
-  for (const nome of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+  /* Desde 06/10/2026 também utm_id, gclid e fbclid, que o CRM grava. Com
+     gclid e fbclid juntos, o CRM fica com o gclid. */
+  for (const nome of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id', 'gclid', 'fbclid']) {
     const valor = texto(atribuicao['last_' + nome] || utm[nome], 200);
     if (valor) url.searchParams.set(nome, valor);
   }

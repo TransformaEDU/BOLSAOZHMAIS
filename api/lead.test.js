@@ -168,7 +168,7 @@ async function executar(body, env = BASE, opts = {}) {
   /* -------------------------------------------------- Horário da prova --- */
 
   {
-    /* 07/11/2026: Icaraí só às 9h; Méier e Vila Isabel também às 14h. */
+    /* 24/10/2026: as três unidades só às 9h (colégio eleitoral). */
     const horarioDe = (chamadas) => {
       const sync = chamadas.find((c) => c.url.includes('/contact/sync'));
       return Object.fromEntries(sync.corpo.contact.fieldValues.map((f) => [String(f.field), f.value]))['59'];
@@ -181,8 +181,10 @@ async function executar(body, env = BASE, opts = {}) {
     assert.strictEqual(tl.corpo.horario_da_prova, '09:00', 'TechLithy recebe o horário nas Observações');
 
     r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio', horario: '14:00' });
-    assert.strictEqual(r.res.code, 200);
-    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Méier aceita a tarde');
+    assert.strictEqual(r.res.code, 400, 'Méier não tem tarde em 24/10');
+
+    r = await executar({ ...leadValido, unidade: 'Vila Isabel', turma: '1ª Série - Ensino Médio', horario: '14:00' });
+    assert.strictEqual(r.res.code, 400, 'Vila Isabel não tem tarde em 24/10');
 
     r = await executar({ ...leadValido, unidade: 'Vila Isabel', turma: '1ª Série - Ensino Médio', horario: '09:00' });
     assert.strictEqual(horarioDe(r.chamadas), '09:00', 'Vila Isabel aceita a manhã');
@@ -192,9 +194,9 @@ async function executar(body, env = BASE, opts = {}) {
     assert.strictEqual(r.chamadas.length, 0, 'horário inválido é recusado antes de tocar o CRM');
 
     r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio' });
-    assert.strictEqual(r.res.code, 200, 'página antiga em cache, sem horário, não perde o lead');
-    assert.strictEqual(horarioDe(r.chamadas), undefined, 'sem escolha, o campo 59 não é inventado');
-    console.log('ok  horário: Icaraí 09:00 fixo; Méier e Vila Isabel 09:00 ou 14:00');
+    assert.strictEqual(r.res.code, 200, 'sem horário no envio, o lead entra');
+    assert.strictEqual(horarioDe(r.chamadas), '09:00', 'unidade de um turno grava 09:00 sozinha');
+    console.log('ok  horário: as três unidades só 09:00 em 24/10');
   }
 
   /* ------------------------------------------------------ TechLithy --- */
@@ -263,6 +265,7 @@ async function executar(body, env = BASE, opts = {}) {
       first_utm_source: 'google',
       last_utm_source: 'fb', last_utm_medium: 'paid', last_utm_campaign: '[27][MEIER] [LEAD] BOLSAO',
       last_utm_content: '[VIDEO] Depoimento', last_utm_term: 'pais 30-45',
+      last_utm_id: '120210000000001', last_fbclid: 'IwAR-teste',
     };
     const { chamadas } = await executar({ ...leadValido, atribuicao }, AMBOS);
     const q = new URL(chamadas.find((c) => c.url.includes('crm.techlithy.com')).url).searchParams;
@@ -271,6 +274,8 @@ async function executar(body, env = BASE, opts = {}) {
     assert.strictEqual(q.get('utm_campaign'), '[27][MEIER] [LEAD] BOLSAO', 'colchetes e espaços voltam iguais');
     assert.strictEqual(q.get('utm_content'), '[VIDEO] Depoimento');
     assert.strictEqual(q.get('utm_term'), 'pais 30-45');
+    assert.strictEqual(q.get('utm_id'), '120210000000001', 'utm_id (id da campanha) vai na query');
+    assert.strictEqual(q.get('fbclid'), 'IwAR-teste', 'fbclid vai na query');
     console.log('ok  TechLithy recebe as cinco UTMs do último toque');
   }
 
