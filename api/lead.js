@@ -94,69 +94,29 @@ const HORARIOS_POR_UNIDADE = {
   'Vila Isabel': ['09:00'],
 };
 
-/* Catálogo de turmas do ZH+ por unidade, o mesmo nas páginas do Infantil e do
-   Bolsão. A lista existe para que um cliente adulterado não injete combinação
+/* Turmas do Bolsão ZH+ por unidade: 4º ao 9º ano e 1ª série (decisão da
+   escola em 13/10/2026). O 9º ano tem um rótulo por unidade, conforme a
+   planilha TURMAS/form-zh-todas-unidades-turmas.xlsx: Icaraí grava "Escolas
+   Técnicas e Militares (Master)", Méier "Especializado", Vila Isabel o regular.
+   A página do Infantil ZH+ continua com o catálogo completo.
+
+   A lista existe para que um cliente adulterado não injete combinação
    inexistente no CRM, e cada valor é o rótulo exato de uma opção do campo
-   "Turma (de interesse)" do ActiveCampaign.
-
-   Fonte: tabela enviada pela escola em 02/10/2026, igual à planilha oficial
-   TURMAS/form-zh-todas-unidades-turmas.xlsx. Dois ajustes conscientes:
-   - A série militar do Méier aparece na planilha como "1ª Série Militar -
-     Ensino Médio Militar", rótulo que não existe no ActiveCampaign. Aqui vai o
-     da opção 67, "1ª Série Militar - Ensino Médio".
-   - O 9º ano de Icaraí segue a coluna "valor enviado" da planilha e grava a
-     turma "9º Ano - Escolas Técnicas e Militares (Master)".
-
-   Esta lista anda junto com o data-uni dos botões do index.html: mudar só um
-   dos dois faz a página oferecer uma turma que o servidor recusa. */
+   "Turma (de interesse)" do ActiveCampaign. Anda junto com o data-uni dos
+   botões do index.html: mudar só um dos dois faz a página oferecer uma turma
+   que o servidor recusa. */
+const SERIES_COMUNS = [
+  '4º Ano - Ensino Fundamental Anos Iniciais',
+  '5º Ano - Ensino Fundamental Anos Iniciais',
+  '6º Ano - Ensino Fundamental Anos Finais',
+  '7º Ano - Ensino Fundamental Anos Finais',
+  '8º Ano - Ensino Fundamental Anos Finais',
+  '1ª Série - Ensino Médio',
+];
 const TURMAS_POR_UNIDADE = {
-  'Icaraí': [
-    'Infantil N1',
-    'Infantil N2',
-    'Infantil N3',
-    'Infantil N4',
-    'Infantil N5',
-    '1º Ano - Ensino Fundamental Anos Iniciais',
-    '2º Ano - Ensino Fundamental Anos Iniciais',
-    '3º Ano - Ensino Fundamental Anos Iniciais',
-    '4º Ano - Ensino Fundamental Anos Iniciais',
-    '5º Ano - Ensino Fundamental Anos Iniciais',
-    '6º Ano - Ensino Fundamental Anos Finais',
-    '7º Ano - Ensino Fundamental Anos Finais',
-    '8º Ano - Ensino Fundamental Anos Finais',
-    '9º Ano - Escolas Técnicas e Militares (Master)',
-    '1ª Série - Ensino Médio',
-    '2ª Série - Ensino Médio',
-    '3ª Série - Ensino Médio',
-    'Pré-Vestibular',
-  ],
-  'Méier': [
-    '1º Ano - Ensino Fundamental Anos Iniciais',
-    '2º Ano - Ensino Fundamental Anos Iniciais',
-    '3º Ano - Ensino Fundamental Anos Iniciais',
-    '4º Ano - Ensino Fundamental Anos Iniciais',
-    '5º Ano - Ensino Fundamental Anos Iniciais',
-    '5º Ano - Especializado',
-    '6º Ano - Ensino Fundamental Anos Finais',
-    '7º Ano - Ensino Fundamental Anos Finais',
-    '8º Ano - Ensino Fundamental Anos Finais',
-    '9º Ano - Especializado',
-    '1ª Série - Ensino Médio',
-    '1ª Série Militar - Ensino Médio',
-    '2ª Série - Ensino Médio',
-  ],
-  'Vila Isabel': [
-    '1º Ano - Ensino Fundamental Anos Iniciais',
-    '2º Ano - Ensino Fundamental Anos Iniciais',
-    '3º Ano - Ensino Fundamental Anos Iniciais',
-    '4º Ano - Ensino Fundamental Anos Iniciais',
-    '5º Ano - Ensino Fundamental Anos Iniciais',
-    '6º Ano - Ensino Fundamental Anos Finais',
-    '7º Ano - Ensino Fundamental Anos Finais',
-    '8º Ano - Ensino Fundamental Anos Finais',
-    '9º Ano - Ensino Fundamental Anos Finais',
-    '1ª Série - Ensino Médio',
-  ],
+  'Icaraí':      [...SERIES_COMUNS, '9º Ano - Escolas Técnicas e Militares (Master)'],
+  'Méier':       [...SERIES_COMUNS, '9º Ano - Especializado'],
+  'Vila Isabel': [...SERIES_COMUNS, '9º Ano - Ensino Fundamental Anos Finais'],
 };
 
 /* Segmento (campo 46) de cada turma. Antes cada página mandava um segmento
