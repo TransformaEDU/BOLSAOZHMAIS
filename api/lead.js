@@ -83,15 +83,15 @@ const TAG_NOME = 'LP Bolsão Ensino Médio - ZH+ 2027';
 const FONTE    = 'Formulário - Externo';
 const CAMPANHA = 'Bolsão';                            // opção 1505 do campo 53
 
-/* Horários da prova por unidade. Prova de 24/10/2026: as três unidades são
-   colégio eleitoral (2º turno em 25/10) e aplicam só às 9h. Para voltar a ter
-   tarde numa unidade, acrescente '14:00' aqui E em HORARIOS_DA_UNIDADE no
-   index.html; o passo "Horário da prova" reaparece sozinho. Os valores são os
-   das opções do campo 59 do ActiveCampaign. */
+/* Horários da prova por unidade. Prova de 07/11/2026: as três unidades às 9h
+   e às 14h (pedido da escola em 04/11/2026). Unidade com um horário só pula o
+   passo "Horário da prova" e grava o dela sozinha. Anda junto com
+   HORARIOS_DA_UNIDADE no index.html. Os valores são os das opções do campo 59
+   do ActiveCampaign. */
 const HORARIOS_POR_UNIDADE = {
-  'Icaraí':      ['09:00'],
-  'Méier':       ['09:00'],
-  'Vila Isabel': ['09:00'],
+  'Icaraí':      ['09:00', '14:00'],
+  'Méier':       ['09:00', '14:00'],
+  'Vila Isabel': ['09:00', '14:00'],
 };
 
 /* Turmas do Bolsão ZH+ por unidade: 4º ao 9º ano e 1ª série (decisão da

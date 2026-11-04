@@ -166,35 +166,32 @@ async function executar(body, env = BASE, opts = {}) {
   /* -------------------------------------------------- Horário da prova --- */
 
   {
-    /* 24/10/2026: as três unidades só às 9h (colégio eleitoral). */
+    /* 07/11/2026: as três unidades às 9h e às 14h. */
     const horarioDe = (chamadas) => {
       const sync = chamadas.find((c) => c.url.includes('/contact/sync'));
       return Object.fromEntries(sync.corpo.contact.fieldValues.map((f) => [String(f.field), f.value]))['59'];
     };
 
-    let r = await executar(leadValido, AMBOS);
+    let r = await executar({ ...leadValido, horario: '14:00' }, AMBOS);
     assert.strictEqual(r.res.code, 200);
-    assert.strictEqual(horarioDe(r.chamadas), '09:00', 'Icaraí grava 09:00 sem precisar escolher');
+    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Icaraí aceita a tarde');
     const tl = r.chamadas.find((c) => c.url.includes('crm.techlithy.com'));
-    assert.strictEqual(tl.corpo.horario_da_prova, '09:00', 'TechLithy recebe o horário nas Observações');
+    assert.strictEqual(tl.corpo.horario_da_prova, '14:00', 'TechLithy recebe o horário nas Observações');
 
     r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio', horario: '14:00' });
-    assert.strictEqual(r.res.code, 400, 'Méier não tem tarde em 24/10');
-
-    r = await executar({ ...leadValido, unidade: 'Vila Isabel', turma: '1ª Série - Ensino Médio', horario: '14:00' });
-    assert.strictEqual(r.res.code, 400, 'Vila Isabel não tem tarde em 24/10');
+    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Méier aceita a tarde');
 
     r = await executar({ ...leadValido, unidade: 'Vila Isabel', turma: '1ª Série - Ensino Médio', horario: '09:00' });
     assert.strictEqual(horarioDe(r.chamadas), '09:00', 'Vila Isabel aceita a manhã');
 
-    r = await executar({ ...leadValido, horario: '14:00' });
-    assert.strictEqual(r.res.code, 400, 'Icaraí não tem prova às 14h');
+    r = await executar({ ...leadValido, horario: '16:00' });
+    assert.strictEqual(r.res.code, 400, 'horário fora da lista é recusado');
     assert.strictEqual(r.chamadas.length, 0, 'horário inválido é recusado antes de tocar o CRM');
 
     r = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série - Ensino Médio' });
-    assert.strictEqual(r.res.code, 200, 'sem horário no envio, o lead entra');
-    assert.strictEqual(horarioDe(r.chamadas), '09:00', 'unidade de um turno grava 09:00 sozinha');
-    console.log('ok  horário: as três unidades só 09:00 em 24/10');
+    assert.strictEqual(r.res.code, 200, 'página antiga em cache, sem horário, não perde o lead');
+    assert.strictEqual(horarioDe(r.chamadas), undefined, 'sem escolha, o campo 59 não é inventado');
+    console.log('ok  horário: as três unidades 09:00 ou 14:00 em 07/11');
   }
 
   /* ------------------------------------------------------ TechLithy --- */
