@@ -18,7 +18,7 @@ const AMBOS = { ...BASE, ...TL };
    por decisão da direção, então não aparecem aqui, mas o servidor continua
    aceitando os dois para quando forem reativados. */
 const leadValido = {
-  unidade: 'Icaraí',
+  unidade: 'Méier',
   turma: '1ª Série - Ensino Médio',
   candidato: 'Maria Clara Souza',
   responsavel: 'Ana Paula Souza',
@@ -68,7 +68,7 @@ async function executar(body, env = BASE, opts = {}) {
     assert.strictEqual(res.body.ok, true);
     const sync = chamadas.find((c) => c.url.includes('/contact/sync'));
     const campos = Object.fromEntries(sync.corpo.contact.fieldValues.map((f) => [f.field, f.value]));
-    assert.strictEqual(campos['1'], 'Icaraí', 'campo 1 deve levar a unidade');
+    assert.strictEqual(campos['1'], 'Méier', 'campo 1 deve levar a unidade');
     assert.strictEqual(campos['12'], '1ª Série - Ensino Médio', 'campo 12 deve levar a turma');
     assert.strictEqual(campos['72'], 'Maria Clara Souza', 'campo 72 deve levar o nome do aluno');
     assert.strictEqual(campos['46'], 'Ensino Médio', 'segmento fixo da LP do Médio');
@@ -172,9 +172,17 @@ async function executar(body, env = BASE, opts = {}) {
       return Object.fromEntries(sync.corpo.contact.fieldValues.map((f) => [String(f.field), f.value]))['59'];
     };
 
+    /* Icaraí fora da prova de 07/11/2026: recusa antes de chamar os CRMs,
+       com qualquer turma e qualquer horário. */
+    for (const extra of [{}, { horario: '09:00' }, { turma: '9º Ano - Escolas Técnicas e Militares (Master)' }]) {
+      const { res, chamadas } = await executar({ ...leadValido, unidade: 'Icaraí', ...extra }, AMBOS);
+      assert.strictEqual(res.code, 400, 'Icaraí não recebe a prova de 07/11');
+      assert.strictEqual(chamadas.length, 0, 'Icaraí: recusa antes de chamar qualquer CRM');
+    }
+
     let r = await executar({ ...leadValido, horario: '14:00' }, AMBOS);
     assert.strictEqual(r.res.code, 200);
-    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Icaraí aceita a tarde');
+    assert.strictEqual(horarioDe(r.chamadas), '14:00', 'Méier aceita a tarde');
     const tl = r.chamadas.find((c) => c.url.includes('crm.techlithy.com'));
     assert.strictEqual(tl.corpo.horario_da_prova, '14:00', 'TechLithy recebe o horário nas Observações');
 
@@ -212,7 +220,7 @@ async function executar(body, env = BASE, opts = {}) {
     assert.strictEqual(tl.corpo['form-field-name'], 'Ana Paula Souza', 'Nome = responsável');
     assert.strictEqual(tl.corpo['form-field-email'], 'ana@exemplo.com');
     assert.strictEqual(tl.corpo['form-field-field_b9d9940'], '+55 21 96925-2117', 'Telefone');
-    assert.strictEqual(tl.corpo['form-field-field_f7903d6'], 'Icaraí', 'Unidade');
+    assert.strictEqual(tl.corpo['form-field-field_f7903d6'], 'Méier', 'Unidade');
     assert.deepStrictEqual(tl.corpo['form-field-field_009575c'], ['1ª Série - Ensino Médio'], 'Turma vai como array');
     assert.strictEqual(tl.corpo['form-field-field_0d0c50e'], 'Maria Clara Souza', 'Aluno');
     assert.match(tl.corpo.external_id, /^lp-bolsao-medio-zhmais-2027-[0-9a-f-]{36}$/);
@@ -373,8 +381,9 @@ async function executar(body, env = BASE, opts = {}) {
       '8º Ano - Ensino Fundamental Anos Finais',
       '1ª Série - Ensino Médio',
     ];
+    /* Icaraí sai enquanto estiver fora da prova (07/11/2026); na próxima
+       data volta com [...comuns, '9º Ano - Escolas Técnicas e Militares (Master)']. */
     const OFERTA = {
-      'Icaraí': [...comuns, '9º Ano - Escolas Técnicas e Militares (Master)'],
       'Méier': [...comuns, '9º Ano - Especializado'],
       'Vila Isabel': [...comuns, '9º Ano - Ensino Fundamental Anos Finais'],
     };
@@ -414,7 +423,6 @@ async function executar(body, env = BASE, opts = {}) {
       ['Méier', '4º Ano - Ensino Fundamental Anos Iniciais', 'Fundamental 1'],
       ['Vila Isabel', '7º Ano - Ensino Fundamental Anos Finais', 'Fundamental 2'],
       ['Méier', '9º Ano - Especializado', 'Fundamental 2'],
-      ['Icaraí', '9º Ano - Escolas Técnicas e Militares (Master)', 'Fundamental 2'],
       ['Vila Isabel', '1ª Série - Ensino Médio', 'Ensino Médio'],
     ];
     for (const [unidade, turma, segmento] of casos) {

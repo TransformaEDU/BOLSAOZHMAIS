@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bolsão ZH+ 2027 — Ensino Médio | Colégio ZH+</title>
-<meta name="description" content="Bolsão ZH+ 2027: a oportunidade de fazer parte de uma escola que prepara para o vestibular, para a carreira militar e para a vida que vem depois. Inscrição gratuita em Icaraí, Méier e Vila Isabel.">
+<meta name="description" content="Bolsão ZH+ 2027: a oportunidade de fazer parte de uma escola que prepara para o vestibular, para a carreira militar e para a vida que vem depois. Inscrição gratuita no Méier e em Vila Isabel.">
 <meta name="theme-color" content="#14191A">
 <link rel="canonical" href="https://bolsao.zhmais.com.br/">
 <!-- max-image-preview:large vem do zhmais.com.br: autoriza o Google a exibir
@@ -1514,10 +1514,10 @@ fbq('track','PageView');
           <p>Niterói. Estrutura completa da Educação Infantil ao Ensino Médio, num bairro que respira convivência.</p>
           <span class="unit__n">Ensino Médio</span>
           <div class="unit__acoes">
-            <button class="btn btn--sm btn--lime js-open" data-src="unidade" data-unidade="Icaraí">
-              Participar em Icaraí
-              <span class="btn__nest"><svg aria-hidden="true"><use href="#arw"/></svg></span>
-            </button>
+            <!-- Icaraí fora da prova de 07/11/2026 (pedido da escola em
+                 04/11/2026). Na próxima data, volta o botão "Participar em
+                 Icaraí" (js-open, data-src="unidade", data-unidade="Icaraí"). -->
+            <span class="unit__n">Sem prova em 7 de novembro</span>
             <a class="unit__link" href="https://zhmais.com.br/icarai/" target="_blank" rel="noopener">Conhecer a unidade</a>
           </div>
         </div>
@@ -1637,7 +1637,7 @@ fbq('track','PageView');
       </details>
       <details class="qa reveal" data-d="1">
         <summary>Onde acontece?<span class="qa__plus" aria-hidden="true"></span></summary>
-        <div class="qa__body">Na unidade que a família escolher na inscrição: Icaraí, em Niterói, ou Méier e Vila Isabel, no Rio de Janeiro. A confirmação com endereço e horário chega no WhatsApp informado.</div>
+        <div class="qa__body">Na unidade que a família escolher na inscrição: Méier ou Vila Isabel, no Rio de Janeiro. A unidade de Icaraí, em Niterói, não recebe a prova de 7 de novembro. A confirmação com endereço e horário chega no WhatsApp informado.</div>
       </details>
       <details class="qa reveal" data-d="1">
         <summary>O que o aluno precisa levar?<span class="qa__plus" aria-hidden="true"></span></summary>
@@ -1769,12 +1769,14 @@ fbq('track','PageView');
         <section class="q" data-step="unidade" data-active>
           <span class="q__kicker">Passo 1 · A unidade</span>
           <h3 id="q-title">Onde o candidato vai fazer a prova?</h3>
-          <p class="q__help">O Ensino Médio existe nas três unidades. Você escolhe agora e ajusta depois, se precisar.</p>
+          <p class="q__help">A prova de 7 de novembro acontece no Méier e em Vila Isabel. Você escolhe agora e ajusta depois, se precisar.</p>
           <div class="opts" role="group" aria-label="Unidade de interesse">
-            <button type="button" class="opt" data-val="Icaraí" data-advance>
-              <span class="opt__dot" aria-hidden="true"></span>
-              <span class="opt__txt">Icaraí <small>Niterói</small></span>
-            </button>
+            <!-- Icaraí fora da prova de 07/11/2026 (pedido da escola em
+                 04/11/2026). Na próxima data, volta esta opção:
+                 <button type="button" class="opt" data-val="Icaraí" data-advance>
+                   <span class="opt__dot" aria-hidden="true"></span>
+                   <span class="opt__txt">Icaraí <small>Niterói</small></span>
+                 </button> -->
             <button type="button" class="opt" data-val="Méier" data-advance>
               <span class="opt__dot" aria-hidden="true"></span>
               <span class="opt__txt">Méier <small>Rio de Janeiro</small></span>
@@ -2068,8 +2070,9 @@ fbq('track','PageView');
 
   /* Horários da prova por unidade. Anda junto com HORARIOS_POR_UNIDADE em
      api/lead.js. Unidade de um turno só pula a pergunta: o turno dela é
-     gravado sozinho. Prova de 07/11/2026: as três às 9h e às 14h. */
-  const HORARIOS_DA_UNIDADE = { 'Icaraí': ['09:00', '14:00'], 'Méier': ['09:00', '14:00'], 'Vila Isabel': ['09:00', '14:00'] };
+     gravado sozinho. Prova de 07/11/2026: Méier e Vila Isabel às 9h e às 14h;
+     Icaraí fora desta edição (lista vazia, o servidor recusa). */
+  const HORARIOS_DA_UNIDADE = { 'Icaraí': [], 'Méier': ['09:00', '14:00'], 'Vila Isabel': ['09:00', '14:00'] };
   const turnosDa = (u) => HORARIOS_DA_UNIDADE[u] || ['09:00'];
   const isSkipped = (i) => nameAt(i) === 'horario' && turnosDa(data.unidade).length < 2;
 
