@@ -2274,12 +2274,22 @@ fbq('track','PageView');
       return achados;
     };
 
+    /* A origem vale 30 dias a partir da visita que a trouxe (pedido da TI em
+       04/11/2026). Toque mais velho que isso é descartado na leitura, e a
+       próxima visita com UTM ocupa o lugar dele, inclusive o primeiro toque.
+       Sem nenhum toque vigente, é como se nunca tivesse havido visita com UTM. */
+    const VALIDADE_MS = 30 * 24 * 60 * 60 * 1000;
+    const vale = (t) => (t && Date.now() - Date.parse(t.capturadoEm) < VALIDADE_MS) ? t : undefined;
+
     const ler = () => {
       try {
         const bruto = localStorage.getItem(CHAVE);
         if (!bruto) return memoria;
         const dados = JSON.parse(bruto);
-        return (dados && dados.versao === 1) ? dados : memoria;
+        if (!dados || dados.versao !== 1) return memoria;
+        const first = vale(dados.first);
+        const last = vale(dados.last);
+        return (first || last) ? { versao: 1, first, last } : null;
       } catch (e) { return memoria; }
     };
 

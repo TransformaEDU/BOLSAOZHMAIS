@@ -119,4 +119,38 @@ const vazio = (obj, msg) => assert.strictEqual(Object.keys(obj).length, 0, msg);
   console.log('ok  navegador sem storage não quebra o formulário');
 }
 
+{
+  /* Validade de 30 dias (pedido da TI em 04/11/2026): envelhece o registro
+     gravado e volta sem UTM. */
+  const envelhecer = (armazem, diasFirst, diasLast) => {
+    const chave = Object.keys(armazem)[0];
+    const r = JSON.parse(armazem[chave]);
+    r.first.capturadoEm = new Date(Date.now() - diasFirst * 864e5).toISOString();
+    r.last.capturadoEm = new Date(Date.now() - diasLast * 864e5).toISOString();
+    armazem[chave] = JSON.stringify(r);
+  };
+
+  let armazem = {};
+  visitar(['?utm_source=antiga', '?utm_source=recente'], armazem);
+  envelhecer(armazem, 40, 10);
+  let r = visitar([''], armazem);
+  assert.strictEqual(r.campos.first_utm_source, undefined, 'toque com mais de 30 dias sai');
+  assert.strictEqual(r.campos.last_utm_source, 'recente', 'toque com menos de 30 dias fica');
+
+  armazem = {};
+  visitar(['?utm_source=a'], armazem);
+  envelhecer(armazem, 31, 31);
+  r = visitar([''], armazem);
+  assert.strictEqual(Object.keys(r.campos).length, 0, 'tudo vencido = sem origem');
+  r = visitar(['?utm_source=nova'], armazem);
+  assert.strictEqual(r.campos.first_utm_source, 'nova', 'depois de vencer, a visita nova vira o primeiro toque');
+
+  armazem = {};
+  visitar(['?utm_source=a'], armazem);
+  envelhecer(armazem, 29, 29);
+  r = visitar([''], armazem);
+  assert.strictEqual(r.campos.last_utm_source, 'a', '29 dias ainda vale');
+  console.log('ok  origem vale 30 dias');
+}
+
 console.log('\ntodos os testes passaram');
