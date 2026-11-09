@@ -83,17 +83,13 @@ const TAG_NOME = 'LP Bolsão Ensino Médio - ZH+ 2027';
 const FONTE    = 'Formulário - Externo';
 const CAMPANHA = 'Bolsão';                            // opção 1505 do campo 53
 
-/* Horários da prova por unidade. Prova de 07/11/2026: as três unidades às 9h
-   e às 14h (pedido da escola em 04/11/2026). Unidade com um horário só pula o
+/* Horários da prova por unidade. Prova de 28/11/2026: as três unidades às 9h
+   e às 14h (pedido da escola em 09/11/2026). Unidade com um horário só pula o
    passo "Horário da prova" e grava o dela sozinha. Anda junto com
    HORARIOS_DA_UNIDADE no index.html. Os valores são os das opções do campo 59
-   do ActiveCampaign.
-
-   Lista vazia = a unidade não recebe a prova nesta edição e a inscrição é
-   recusada. Icaraí está fora da prova de 07/11/2026 (pedido da escola em
-   04/11/2026); na próxima data, volta para ['09:00', '14:00']. */
+   do ActiveCampaign. */
 const HORARIOS_POR_UNIDADE = {
-  'Icaraí':      [],
+  'Icaraí':      ['09:00', '14:00'],
   'Méier':       ['09:00', '14:00'],
   'Vila Isabel': ['09:00', '14:00'],
 };
@@ -180,7 +176,6 @@ function validar(body) {
      horário é a página antiga em cache: o lead entra sem o campo e a
      secretaria confirma pelo WhatsApp, em vez de ser recusado. */
   const turnos = HORARIOS_POR_UNIDADE[d.unidade];
-  if (!turnos.length) return { erro: 'Essa unidade não recebe a prova nesta edição. Escolha outra unidade.' };
   if (d.horario && !turnos.includes(d.horario)) return { erro: 'Esse horário de prova não existe na unidade escolhida.' };
   if (!d.horario && turnos.length === 1) d.horario = turnos[0];
   if (d.origem && !ORIGENS.includes(d.origem)) return { erro: 'Origem escolar inválida.' };
