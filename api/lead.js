@@ -115,7 +115,10 @@ const SERIES_COMUNS = [
 ];
 const TURMAS_POR_UNIDADE = {
   'Icaraí':      [...SERIES_COMUNS, '9º Ano - Escolas Técnicas e Militares (Master)'],
-  'Méier':       [...SERIES_COMUNS, '9º Ano - Especializado'],
+  /* 1ª Série Militar do Méier: volta só para o Bolsão Militar Premiado de
+     28/11/2026, às 14h (decisão da escola em 18/11/2026; do ZH+ só o Méier
+     participa). O lead chega pela página do Bolsão Zerohum (/militar). */
+  'Méier':       [...SERIES_COMUNS, '9º Ano - Especializado', '1ª Série Militar - Ensino Médio'],
   'Vila Isabel': [...SERIES_COMUNS, '9º Ano - Ensino Fundamental Anos Finais'],
 };
 

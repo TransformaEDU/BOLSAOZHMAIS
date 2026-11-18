@@ -91,11 +91,14 @@ async function executar(body, env = BASE, opts = {}) {
 
 
   {
-    /* A 1ª série militar do Méier saiu do Bolsão em 13/10/2026. */
-    const { res, chamadas } = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série Militar - Ensino Médio' });
-    assert.strictEqual(res.code, 400, 'série militar não é oferecida no Bolsão');
-    assert.strictEqual(chamadas.length, 0);
-    console.log('ok  série militar do Méier fica fora do Bolsão');
+    /* 18/11/2026: a 1ª série militar do Méier volta, para o Bolsão Militar
+       Premiado, e só às 14h. */
+    const { res } = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série Militar - Ensino Médio', horario: '14:00' });
+    assert.strictEqual(res.code, 200, '1ª série militar do Méier às 14h é aceita');
+    const manha = await executar({ ...leadValido, unidade: 'Méier', turma: '1ª Série Militar - Ensino Médio', horario: '09:00' });
+    assert.strictEqual(manha.res.code, 400, '1ª série militar às 9h é recusada');
+    assert.strictEqual(manha.chamadas.length, 0);
+    console.log('ok  1ª série militar do Méier só às 14h (Bolsão Militar Premiado)');
   }
 
   {
@@ -387,7 +390,7 @@ async function executar(body, env = BASE, opts = {}) {
     ];
     const OFERTA = {
       'Icaraí': [...comuns, '9º Ano - Escolas Técnicas e Militares (Master)'],
-      'Méier': [...comuns, '9º Ano - Especializado'],
+      'Méier': [...comuns, '9º Ano - Especializado', '1ª Série Militar - Ensino Médio'],
       'Vila Isabel': [...comuns, '9º Ano - Ensino Fundamental Anos Finais'],
     };
     let aceitas = 0;
@@ -404,7 +407,6 @@ async function executar(body, env = BASE, opts = {}) {
       ['Icaraí', '1º Ano - Ensino Fundamental Anos Iniciais'],
       ['Vila Isabel', '3º Ano - Ensino Fundamental Anos Iniciais'],
       ['Méier', '5º Ano - Especializado'],
-      ['Méier', '1ª Série Militar - Ensino Médio'],
       ['Icaraí', '2ª Série - Ensino Médio'],
       ['Icaraí', '3ª Série - Ensino Médio'],
       ['Icaraí', 'Pré-Vestibular'],
