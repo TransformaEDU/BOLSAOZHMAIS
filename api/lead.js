@@ -83,16 +83,16 @@ const TAG_NOME = 'LP Bolsão Ensino Médio - ZH+ 2027';
 const FONTE    = 'Formulário - Externo';
 const CAMPANHA = 'Bolsão';                            // opção 1505 do campo 53
 
-/* Horários da prova por unidade. Prova de 28/11/2026: as três unidades às 9h
-   e às 14h (pedido da escola em 09/11/2026). Unidade com um horário só pula o
-   passo "Horário da prova" e grava o dela sozinha. Anda junto com
-   HORARIOS_DA_UNIDADE no index.html. Os valores são os das opções do campo 59
-   do ActiveCampaign. */
-const HORARIOS_POR_UNIDADE = {
-  'Icaraí':      ['09:00', '14:00'],
-  'Méier':       ['09:00', '14:00'],
-  'Vila Isabel': ['09:00', '14:00'],
-};
+/* Turno da prova pela TURMA, não pela unidade (decisão da escola para o
+   Bolsão de 28/11/2026): turma militar faz às 14h, todas as outras às 9h.
+   Anda junto com ehTurmaMilitar/turnoDaTurma no index.html: mudar só um dos
+   dois faz a página gravar um turno que o servidor recusa. Nesta LP a única
+   turma militar é o 9º ano Master de Icaraí; a lista de siglas cobre as
+   turmas preparatórias caso entrem no Bolsão. Os valores são os das opções
+   do campo 59 do ActiveCampaign. */
+const SIGLAS_MILITARES = ['Colégio Naval + EPCAR', 'EAM', 'EEAR', 'ESA', 'IME / ITA'];
+const ehTurmaMilitar = (turma) => /militar/i.test(turma || '') || SIGLAS_MILITARES.includes(turma);
+const turnoDaTurma = (turma) => (ehTurmaMilitar(turma) ? '14:00' : '09:00');
 
 /* Turmas do Bolsão ZH+ por unidade: 4º ao 9º ano e 1ª série (decisão da
    escola em 13/10/2026). O 9º ano tem um rótulo por unidade, conforme a
@@ -172,12 +172,13 @@ function validar(body) {
   if (!turmas) return { erro: 'Unidade inválida.' };
   if (!turmas.includes(d.turma)) return { erro: 'Essa turma não é oferecida na unidade escolhida.' };
 
-  /* Unidade de um turno só grava o turno dela. Unidade de dois turnos sem
-     horário é a página antiga em cache: o lead entra sem o campo e a
-     secretaria confirma pelo WhatsApp, em vez de ser recusado. */
-  const turnos = HORARIOS_POR_UNIDADE[d.unidade];
-  if (d.horario && !turnos.includes(d.horario)) return { erro: 'Esse horário de prova não existe na unidade escolhida.' };
-  if (!d.horario && turnos.length === 1) d.horario = turnos[0];
+  /* Cada turma tem um turno só. Sem horário (página antiga em cache), o
+     servidor grava o da turma. Horário diferente do da turma é recusado. */
+  const turno = turnoDaTurma(d.turma);
+  if (d.horario && d.horario !== turno) {
+    return { erro: turno === '14:00' ? 'Turmas militares fazem a prova às 14h.' : 'Para esta turma a prova é às 9h.' };
+  }
+  d.horario = turno;
   if (d.origem && !ORIGENS.includes(d.origem)) return { erro: 'Origem escolar inválida.' };
   if (d.candidato.length < 5 || !d.candidato.includes(' ')) return { erro: 'Informe o nome completo do candidato.' };
   if (d.responsavel.length < 5 || !d.responsavel.includes(' ')) return { erro: 'Informe o nome completo do responsável.' };
