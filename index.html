@@ -2383,6 +2383,13 @@ fbq('track','PageView');
       show(steps.findIndex(s => s.dataset.step === 'sucesso'), 1);
       confetti();
       if (window.fbq) fbq('track', 'Lead');
+      /* Página de obrigado da unidade escolhida (/obrigado/<unidade>/), que
+         mede a conversão por unidade e leva ao WhatsApp dela. A espera deixa
+         o Lead do Pixel sair antes de trocar de página; enquanto isso a
+         família vê a tela de sucesso, que fica como reserva se a unidade não
+         tiver página. */
+      const paginaObrigado = { 'Icaraí': 'icarai', 'Méier': 'meier', 'Vila Isabel': 'vila-isabel' }[data.unidade];
+      if (paginaObrigado) setTimeout(() => location.assign(`/obrigado/${paginaObrigado}/`), 1200);
     } catch (e) {
       /* O cadastro continua preenchido na tela, então é só tocar em enviar de novo. */
       $('#err-envio-txt').textContent = (e && e.amigavel)
